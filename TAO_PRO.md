@@ -5,7 +5,7 @@
 - Terraform Tests??
 - Manual approval to deploy on prod account
 	- It makes sense, but you have nonprod to test the deployment, right?
-- -input=false
+- `-input=false`
 	- Great to avoid command to asking for inputs in CI/CD
 	- Add it on local aliases and CI/CD commands
 - CLI docs >>> Browser docs
