@@ -14,32 +14,32 @@
 - Add to the version control system the .terraform.lock.hcl file
 - No connectivity?
 	1. Download locally the plugins
-		- terraform providers mirror <YOUR_LOCAL_PATH>
+		- `terraform providers mirror <YOUR_LOCAL_PATH>`
 		- It downloads all the providers defined in your TF files
 	2. Add provider_installation TF block in $HOME/.terraformrc file
-		- ```hcl
-			provider_installation {
-			  # filesystem_mirror
-			  filesystem_mirror {
-			    path    = "/usr/share/terraform/providers"
-			    include = ["example.com/*/*"]
-			  }
-			  # Direct download form Internet
-			  direct {
-			    exclude = ["example.com/*/*"]
-			  }
-			}
+		```hcl
+				provider_installation {
+				  # filesystem_mirror
+				  filesystem_mirror {
+				    path    = "/usr/share/terraform/providers"
+				    include = ["example.com/*/*"]
+				  }
+				  # Direct download form Internet
+				  direct {
+				    exclude = ["example.com/*/*"]
+				  }
+				}
 		```
 - Checkov
 	- Code scanning
 		- Check specific "checks"
-			- checkov -f/-d <FILE>/<PATH> --check <CHECK_CODE>
+			- `checkov -f/-d <FILE>/<PATH> --check <CHECK_CODE>`
 			- It supports wildcards (\*)
 		- Skip check
-			- --skip-check
-			- In code, using comment "# checkov:skip=<CHECK_ID>:<Sign-off / Justification>"
+			- `--skip-check`
+			- In code, using comment `#checkov:skip=<CHECK_ID>:<Sign-off / Justification>`
 	- Plan scanning?
-		- Pass the plan file as an argument to "checkov -f" command
+		- Pass the plan file as an argument to `checkov -f` command
 
 - Terraform plan in a file?
 	- Ensuring consistency at apply time.
@@ -52,27 +52,27 @@
 	- Process
 		1. Use import block in a tf file (e.g. import.tf)
 		2. Then, execute "terraform plan -generate-config-out=<FILE>"" (Terraform 1.5 and above)
-		3. "terraform apply"
+		3. `terraform apply`
 	- Provider region **MUST** match ther resource region
 
 - Resource Targeting
-	- Use -target flag in "terraform plan"
+	- Use `-target` flag in `terraform plan`
 	- You cannot targeting multiple resources at a time
 		- Just one or all of them
 	- If you target a resource that depends on another, you will target both of them indirectly
 
 - Random number - Generate "unique" identifiers for resources names/IDs
-	- ```hcl
+	```hcl
 	  resource "random_integer" "this" {
-	  	min = 1
-	  	max = 100
+		min = 1
+		max = 100
 	  }
-	  ```
+	```
 
 - Moved blocks (terraforom state mv <source> <destination>)
 	- Process
 		1. Rename the original resources
-		2. Add a "moved" block
+		2. Add a `moved` block
 			```hcl
 			  moved {
 			  	from = original_resource_name
@@ -81,28 +81,28 @@
 			```
 
 - Terraform state commands
-	- list - list all Terraform-managed resources
-	- show <resource_name> - get resource HCL definition
-	- pull - retrieve state file
-	- rm <resource_name> - remove a resource from Terraform state
-	- mv <source_resource> <destination_resource> - move a resource to a different address without recreation
+	- `list` - list all Terraform-managed resources
+	- `show <resource_name>` - get resource HCL definition
+	- `pull` - retrieve state file
+	- `rm <resource_name>` - remove a resource from Terraform state
+	- `mv <source_resource> <destination_resource>` - move a resource to a different address without recreation
 
 - Terraform Remote State data source
 	- https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/data-sources/remote_state
-	- ```hcl
-		data "terraform_remote_state" "s3" {
-		  backend = "s3"
-		  config = {
-		    bucket = ""
-		    key = ""
-		    region = ""
-		  }
-		}
-	  ```
+		```hcl
+			data "terraform_remote_state" "s3" {
+			  backend = "s3"
+			  config = {
+			    bucket = ""
+			    key = ""
+			    region = ""
+			  }
+			}
+		```
 
 - Terraform test to verify at plan and apply stage if you want
-	- .tftest.json or .tftest.hcl file extension in a tests/ folder 
-		- ```hcl
+	- `.tftest.json` or `.tftest.hcl` file extension in a tests/ folder 
+		```hcl
 			provider "aws" {
 				region = "ap-southeast-1"
 			}
@@ -147,21 +147,3 @@
 - You want to verify if specific HTTP endpoint is working during Terraform infrastructure deployment, however you don't want to block the deployment if HTTP data source fails. What is the way to achieve this?
 	- Define the http data source inside the check blocks
 	- https://developer.hashicorp.com/terraform/tutorials/configuration-language/checks#use-a-data-source-within-a-check
-
-## EOS Tasks
-
-- Add "-input=false" on local aliases and CI/CD commands
-- Create plugin cache directory for local laptop
-	- cat $HOME/.terraformrc
-		- plugin_cache_dir = "<YOUR_LOCAL_PATH>"
-		- Or set TF_PLUGIN_CACHE_DIR environment variable
-- Plan scanning? Add it to CI/CD
-	- Pass the plan file as an argument to "checkov -f" command
-	- It's a new step between plan and apply stages
-- Set TF_IN_AUTOMATION in CI/CD to avoid suggestions
-- Terraform Remote State data source?
-- Terraform tests
-	- Create tests folder and add a file named <project_name>.tftest.hcl
-	- Add to CI/CD, at verify stage, a job to execute the terraform test command
-- Terraform checks
-	- https://developer.hashicorp.com/terraform/tutorials/configuration-language/checks
